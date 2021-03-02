@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
+import { v4 as uuidv4 } from "uuid";
 
 export class App extends Component {
   state = {
     groceryList: [
       {
+        id: uuidv4(),
         buy: "apples",
+        finished: false,
+      },
+      {
+        id: uuidv4(),
+        buy: "pears",
+        finished: false,
       },
     ],
     inputVal: "",
@@ -12,13 +20,33 @@ export class App extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault()
-    console.log(this.state)
-    console.log(16)
+
+    let newInputArr = [
+      ...this.state.groceryList,
+      { id: uuidv4(), buy: this.state.inputVal, finished: false },
+    ];
+
+    this.setState({
+      groceryList: newInputArr,
+      inputVal: "",
+    })
   }
 
   handleOnChange = (e) => {
     this.setState({
       inputVal: e.target.value
+    })
+  }
+
+  handleFinished = (e) => {
+    const element = e.target;
+    element.classList.toggle("crossed-line");
+  }
+
+  handleRIP = (id) => {
+    let filterGroceryList = this.state.groceryList.filter((item) => item.id !== id);
+    this.setState({
+      groceryList: filterGroceryList,
     })
   }
 
@@ -45,6 +73,31 @@ export class App extends Component {
             Enter
           </button>
         </form>
+        <div>
+          <ul>
+            {this.state.groceryList.map((item) => {
+              return (
+            <div key={item.id}>
+              <li>
+              {item.buy}
+              </li>
+                  <button
+                    onClick={() => this.handleFinished(item.id)}
+                    className="btn btn-warning button-style"
+                  >
+                    Finished
+                  </button>
+                  <button
+                    onClick={() => this.handleRIP(item.id)}
+                    className="btn btn=danger"
+                  >
+                    RIP
+                  </button>
+                </div>
+              )    
+            })}
+          </ul>
+        </div>
       </div>
     );
   };
